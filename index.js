@@ -89,10 +89,10 @@ app.get("/api/Registrations", async (req, res) => {
   }
 });
 // TnP can change the job status of the students from applied or shortlisted or hired or declined
-app.put("/updatestatus/:id", async (req, res) => {
+app.put("/updatestatus/:Job_Status", async (req, res) => {
   try {
     const data = await REGISTRATIONS_MODEL.findByIdAndUpdate(req.params.id, {
-      Job_Status: "Accepted",
+      Job_Status: "Applied",
     });
     return res.status(200).json({
       success: true,
@@ -106,7 +106,7 @@ app.put("/updatestatus/:id", async (req, res) => {
   }
 });
 // TnP can change job details if required
-app.put("/updatejobsdetails:id", async (req, res) => {
+app.put("/update_jobs_details/:id", async (req, res) => {
   try {
     const data = await JOBS_MODEL.findByIdAndUpdate(req.param.id, {
       Branch_Eligibility: "ECE",
@@ -126,7 +126,7 @@ app.put("/updatejobsdetails:id", async (req, res) => {
   }
 });
 // student can change their registration details if required
-app.put("/updateRegistrations:id", async (req, res) => {
+app.put("/update_Registrations/:id", async (req, res) => {
   try {
     const data = await REGISTRATIONS_MODEL.findByIdAndUpdate(req.params.id, {
       Home_Address: "Delhi",
@@ -147,7 +147,7 @@ app.put("/updateRegistrations:id", async (req, res) => {
 });
 
 //  student must be able to view all the job posting applied
-app.post("/api/AllJobpostings/:email", async (req, res) => {
+app.post("/api/AllJobpostings/:id", async (req, res) => {
   try {
     const registrationsData = await REGISTRATIONS_MODEL.find({
       JobID: req.body.ID,
@@ -200,7 +200,7 @@ app.post("/api/candidatehired/:job_id", async (req, res) => {
 });
 
 // TnP can delete any job posting
-app.delete("/deletejobposting:id", async (req, res) => {
+app.delete("/delete_job-posting/:id", async (req, res) => {
   try {
     const deletedocument = await JOBS_MODEL.findByIdAndDelete(req.params.id);
     return res.status(200).json({
@@ -215,18 +215,15 @@ app.delete("/deletejobposting:id", async (req, res) => {
   }
 });
 // student can delete their registration
-app.delete("/deletestudentregistration:id", async (req, res) => {
+app.delete("/api/delete/Registrationsdetails/:id", async (req, res) => {
   try {
-    const deldata = await REGISTRATIONS_MODEL.findByIdAndDelete(req.params.id);
-    return res.status(200).json({
-      success: true,
-      data: deldata,
-    });
+    const del_jobposting = await REGISTRATIONS_MODEL.findByIdAndDelete(
+      req.params.id
+    );
+    return res.json({ success: true, data: del_jobposting });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      error: error.message,
-    });
+    console.log(error);
+    return res.status(401).json({ success: false, error: error.message });
   }
 });
 
