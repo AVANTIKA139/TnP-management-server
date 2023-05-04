@@ -158,7 +158,23 @@ app.post("/api/AllJobpostings/:id", async (req, res) => {
     return res.status(403).json({ success: false, error: error.message });
   }
 });
+
+// $lte---->matches values that are greater than or equal to specified value
+// $in---->matches any of the value specified in an array
 // students can also see job postings according to their branch and cgpa
+app.post("/api/filtered_Job_Postings/:cgpa/:branch", async (req, res) => {
+  try {
+    const CGPA = parseFloat(req.params.GPA);
+    const filteredJobData = await JOBS_MODEL.find({
+      minimum_CGPA: { $lte: CGPA },
+      Branch_Eligibility: { $in: req.params.Eligibility },
+    });
+    return res.json({ success: true, data: filteredJobData });
+  } catch (error) {
+    console.log(error);
+    return res.status(403).json({ success: false, error: error.message });
+  }
+});
 
 // TnP can see all students registered for a job
 app.post("/api/studentsregisteredforjob/:Job_Id", async (req, res) => {
@@ -186,7 +202,7 @@ app.post("/api/filtered_Job_Status/:jobstatus", async (req, res) => {
 });
 
 // TnP can see hired student for a company
-app.post("/api/candidatehired/:job_id", async (req, res) => {
+app.post("/api/candidate_hired/:job_id", async (req, res) => {
   try {
     const hired = await REGISTRATIONS_MODEL.find({
       Job_Status: "Hired",
