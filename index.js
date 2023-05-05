@@ -89,7 +89,7 @@ app.get("/api/Registrations", async (req, res) => {
   }
 });
 // TnP can change the job status of the students from applied or shortlisted or hired or declined
-app.put("/updatestatus/:Job_Status", async (req, res) => {
+app.put("/updatestatus/:id", async (req, res) => {
   try {
     const data = await REGISTRATIONS_MODEL.findByIdAndUpdate(req.params.id, {
       Job_Status: "Applied",
@@ -108,7 +108,7 @@ app.put("/updatestatus/:Job_Status", async (req, res) => {
 // TnP can change job details if required
 app.put("/update_jobs_details/:id", async (req, res) => {
   try {
-    const data = await JOBS_MODEL.findByIdAndUpdate(req.param.id, {
+    const data = await JOBS_MODEL.findByIdAndUpdate(req.params.id, {
       Branch_Eligibility: "ECE",
       Minimum_CGPA: "7.8",
       Deadline_Date: "09052023",
@@ -147,10 +147,10 @@ app.put("/update_Registrations/:id", async (req, res) => {
 });
 
 //  student must be able to view all the job posting applied
-app.post("/api/AllJobpostings/:id", async (req, res) => {
+app.post("/api/AllJobpostings/:ID", async (req, res) => {
   try {
     const registrationsData = await REGISTRATIONS_MODEL.find({
-      JobID: req.body.ID,
+      JobID: req.params.ID,
     });
     return res.json({ success: true, data: registrationsData });
   } catch (error) {
@@ -162,11 +162,12 @@ app.post("/api/AllJobpostings/:id", async (req, res) => {
 // $lte---->matches values that are greater than or equal to specified value
 // $in---->matches any of the value specified in an array
 // students can also see job postings according to their branch and cgpa
-app.post("/api/filtered_Job_Postings/:cgpa/:branch", async (req, res) => {
+app.post("/api/filteredJobs/:GPA/:Eligibility", async (req, res) => {
   try {
     const CGPA = parseFloat(req.params.GPA);
+
     const filteredJobData = await JOBS_MODEL.find({
-      minimum_CGPA: { $lte: CGPA },
+      Minimum_CGPA: { $lte: CGPA },
       Branch_Eligibility: { $in: req.params.Eligibility },
     });
     return res.json({ success: true, data: filteredJobData });
@@ -177,10 +178,10 @@ app.post("/api/filtered_Job_Postings/:cgpa/:branch", async (req, res) => {
 });
 
 // TnP can see all students registered for a job
-app.post("/api/studentsregisteredforjob/:Job_Id", async (req, res) => {
+app.post("/api/studentsregisteredforjob/:ID", async (req, res) => {
   try {
     const Data = await REGISTRATIONS_MODEL.find({
-      JobID: req.body.ID,
+      JobID: req.params.ID,
     });
     return res.json({ success: true, data: Data });
   } catch (error) {
@@ -189,10 +190,10 @@ app.post("/api/studentsregisteredforjob/:Job_Id", async (req, res) => {
   }
 });
 //  TnP can see all the hired/shortlisted/rejected students
-app.post("/api/filtered_Job_Status/:jobstatus", async (req, res) => {
+app.post("/api/filtered_Job_Status/:Status", async (req, res) => {
   try {
     const filteredData = await REGISTRATIONS_MODEL.find({
-      Job_Status: req.body.Status,
+      Job_Status: req.params.Status,
     });
     return res.json({ success: true, data: filteredData });
   } catch (error) {
@@ -206,7 +207,7 @@ app.post("/api/candidate_hired/:job_id", async (req, res) => {
   try {
     const hired = await REGISTRATIONS_MODEL.find({
       Job_Status: "Hired",
-      Job_ID: req.params.job_id,
+      JobID: req.params.job_id,
     });
     return res.json({ success: true, data: hired });
   } catch (error) {
@@ -216,7 +217,7 @@ app.post("/api/candidate_hired/:job_id", async (req, res) => {
 });
 
 // TnP can delete any job posting
-app.delete("/delete_job-posting/:id", async (req, res) => {
+app.delete("/api/delete/jobposting/:id", async (req, res) => {
   try {
     const deletedocument = await JOBS_MODEL.findByIdAndDelete(req.params.id);
     return res.status(200).json({
