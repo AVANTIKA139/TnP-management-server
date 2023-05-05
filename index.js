@@ -164,10 +164,8 @@ app.post("/api/AllJobpostings/:ID", async (req, res) => {
 // students can also see job postings according to their branch and cgpa
 app.post("/api/filteredJobs/:GPA/:Eligibility", async (req, res) => {
   try {
-    const CGPA = parseFloat(req.params.GPA);
-
     const filteredJobData = await JOBS_MODEL.find({
-      Minimum_CGPA: { $lte: CGPA },
+      Minimum_CGPA: { $lte: req.params.GPA },
       Branch_Eligibility: { $in: req.params.Eligibility },
     });
     return res.json({ success: true, data: filteredJobData });
